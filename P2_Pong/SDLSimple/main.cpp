@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #endif
 
-
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_image.h>
@@ -93,8 +92,13 @@ void Initialize() {
 	ball.position = glm::vec3(0.0f, 0.0f, 0.0f);
 	ball.movement = glm::vec3(1.5f, -0.3f, 0);
 
+	leftwin.position = glm::vec3(-4.3f, 3.0f, 0.0f);
+	rightwin.position = glm::vec3(4.3f, 3.0f, 0.0f);
+
 	program.Load("shaders/vertex.glsl", "shaders/fragment.glsl");
-	textured_program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");\
+	textured_program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
+	leftwin.textureID = LoadTexture("win.png");
+	rightwin.textureID = LoadTexture("win.png");
 
 	left.speed = 2;
 	right.speed = 2;
@@ -115,7 +119,11 @@ void Initialize() {
 	program.SetViewMatrix(viewMatrix);
 	program.SetColor(1.0f, 0.0f, 0.0f, 1.0f);
 
+	textured_program.SetProjectionMatrix(projectionMatrix);
+	textured_program.SetViewMatrix(viewMatrix);
+
 	glUseProgram(program.programID);
+	glUseProgram(textured_program.programID);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -232,6 +240,15 @@ void Update() {
 		winner = 1;
 	}
 
+
+	if (ball.position.x > 7.0f || ball.position.x < -7.0f || ball.position.y > 5.0f || ball.position.y < -5.0f) {
+		ball.position = glm::vec3(0.0f, 0.0f, 0.0f);
+		ball.movement = glm::vec3(1.3f, -0.3f, 0);
+		left.position = glm::vec3(-4.8f, 0.0f, 0.0f);
+		right.position = glm::vec3(4.8f, 0.0f, 0.0f);
+		winner = 0;
+	}
+
 	left.Update(deltaTime);
 	right.Update(deltaTime);
 	ball.Update(deltaTime*2);
@@ -245,14 +262,20 @@ void Update() {
 void Render() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-
 	float left_vertices[] = { -0.1, -1.0, 0.1, -1.0, 0.1, 1.0, -0.1, -1.0, 0.1, 1.0, -0.1, 1.0 };
 	float right_vertices[] = { -0.1, -1.0, 0.1, -1.0, 0.1, 1.0, -0.1, -1.0, 0.1, 1.0, -0.1, 1.0 };
 	float ball_vertices[] = { -0.2, -0.2, 0.2, -0.2, 0.2, 0.2, -0.2, -0.2, 0.2, 0.2, -0.2, 0.2 };
+	float win_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
 
 	left.Render(&program, left_vertices);
 	right.Render(&program, right_vertices);
 	ball.Render(&program, ball_vertices);
+	if (winner == 1) {
+		leftwin.Render(&textured_program, win_vertices);
+	}
+	else if (winner == 2) {
+		rightwin.Render(&textured_program, win_vertices);
+	}
 
 	SDL_GL_SwapWindow(displayWindow);
 }
