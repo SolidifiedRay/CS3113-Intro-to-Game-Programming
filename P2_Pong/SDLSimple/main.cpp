@@ -117,7 +117,7 @@ void Initialize() {
 
 	program.SetProjectionMatrix(projectionMatrix);
 	program.SetViewMatrix(viewMatrix);
-	program.SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+	program.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	textured_program.SetProjectionMatrix(projectionMatrix);
 	textured_program.SetViewMatrix(viewMatrix);
