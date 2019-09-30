@@ -21,9 +21,20 @@ public:
 	float speed;
 
 	GLuint textureID;
+	int cols;
+	int rows;
+	int *walkRight;
+	int *walkLeft;
+	int animFrames;
+	int animIndex;
+	float animTime;
+
 
 	Entity();
 
 	void Update(float deltaTime);
 	void Render(ShaderProgram *program);
+
+	void DrawSpriteFromTextureAtlas(ShaderProgram *program, int index);
+
 };

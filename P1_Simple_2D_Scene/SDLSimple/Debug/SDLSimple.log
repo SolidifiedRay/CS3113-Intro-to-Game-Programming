@@ -1,3 +1,4 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (SDLSimple.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   main.cpp
-  SDLSimple.vcxproj -> D:\CS3113\CS3113\P2_Pong\Debug\P1_Simple_2D_Scene.exe
+d:\cs3113\cs3113\p1_simple_2d_scene\sdlsimple\main.cpp(112): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  SDLSimple.vcxproj -> D:\CS3113\CS3113\P1_Simple_2D_Scene\Debug\P1_Simple_2D_Scene.exe

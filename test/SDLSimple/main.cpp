@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #endif
 
-
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_image.h>
@@ -16,8 +15,6 @@
 #include "stb_image.h"
 
 #include "Entity.h"
-
-
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
@@ -66,8 +63,13 @@ void Initialize() {
 
 	program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
 
-	player.textureID = LoadTexture("me.png");
+	player.textureID = LoadTexture("george_0.png");
 	player.speed = 2;
+	player.cols = 4;
+	player.rows = 4;
+	player.walkRight = new int[4]{ 3, 7, 11, 15 };
+	player.walkLeft = new int[4]{ 1, 5, 9, 15 };
+	player.animFrames = 4;
 
 	viewMatrix = glm::mat4(1.0f);
 	modelMatrix = glm::mat4(1.0f);
@@ -94,8 +96,28 @@ void ProcessInput() {
 		case SDL_WINDOWEVENT_CLOSE:
 			gameIsRunning = false;
 			break;
+		case SDL_KEYDOWN:
+			switch (event.key.keysym.sym) {
+			case SDLK_SPACE:
+				// Some sort of action
+				break;
+
+			}
+			break;
 		}
 	}
+	// Check for pressed/held keys below
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+	if (keys[SDL_SCANCODE_A])
+	{
+		player.movement.x= -1;
+	}
+	else if (keys[SDL_SCANCODE_D])
+	{
+		player.movement.x = 1;
+	}
+
 }
 
 void Update() {
