@@ -1,10 +1,2 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (P1_Simple_2D_Scene.vcxproj, SDLSimple.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  main.cpp
-d:\cs3113\cs3113\p2_pong\sdlsimple\main.cpp(107): warning C4305: '=': truncation from 'double' to 'float'
-d:\cs3113\cs3113\p2_pong\sdlsimple\main.cpp(109): warning C4305: '=': truncation from 'double' to 'float'
-d:\cs3113\cs3113\p2_pong\sdlsimple\main.cpp(111): warning C4305: '=': truncation from 'double' to 'float'
-d:\cs3113\cs3113\p2_pong\sdlsimple\main.cpp(112): warning C4305: '=': truncation from 'double' to 'float'
-d:\cs3113\cs3113\p2_pong\sdlsimple\main.cpp(265): warning C4305: 'initializing': truncation from 'double' to 'float'
-d:\cs3113\cs3113\p2_pong\sdlsimple\main.cpp(266): warning C4305: 'initializing': truncation from 'double' to 'float'
-d:\cs3113\cs3113\p2_pong\sdlsimple\main.cpp(267): warning C4305: 'initializing': truncation from 'double' to 'float'
   SDLSimple.vcxproj -> D:\CS3113\CS3113\P2_Pong\Debug\SDL_test.exe
