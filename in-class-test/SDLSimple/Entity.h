@@ -12,20 +12,38 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
+enum EntityType { PLAYER, PLATFORM, COIN};
 
 class Entity {
 public:
+	EntityType entityType;
+	bool isStatic;
+	bool isActive;
 
 	glm::vec3 position;
-	glm::vec3 movement;
+	glm::vec3 velocity;
+	glm::vec3 acceleration;
+
 	float speed;
+	float width;
+	float height;
 
 	GLuint textureID;
 
 	Entity();
 
-	void Update(float deltaTime);
-	void Render(ShaderProgram *program);
+	bool checkCollision(Entity other);
+
+	void CheckCollisionsY(Entity *objects, int objectCount);
+	void CheckCollisionsX(Entity *objects, int objectCount);
+
+	void Update(float deltaTime, Entity* objects, int objectCoun);
+	void Render(ShaderProgram* program);
+	void Jump();
+	bool collidedTop;
+	bool collidedBottom;
+	bool collidedLeft;
+	bool collidedRight;
 };
 
 

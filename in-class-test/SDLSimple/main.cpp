@@ -23,11 +23,16 @@ bool gameIsRunning = true;
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
+#define PLATFORM_COUNT 5
+
+
 struct GameState {
 	Entity player;
+	Entity platforms[PLATFORM_COUNT];
 };
 
 GameState state;
+
 
 GLuint LoadTexture(const char* filePath) {
 	int w, h, n;
@@ -64,7 +69,26 @@ void Initialize() {
 
 	program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
 
+	state.player.entityType = PLAYER;
+	state.player.isStatic = false;
+	state.player.width = 0.7f;
+	state.player.position = glm::vec3(0, 3, 0);
+	state.player.acceleration = glm::vec3(0.0f, -9.81f, 0.0f);
 	state.player.textureID = LoadTexture("animal.png");
+
+	GLuint tileTextureID = LoadTexture("tile.png");
+
+	state.platforms[0].textureID = tileTextureID;
+	state.platforms[0].position = glm::vec3(0, -3.25f, 0);
+	state.platforms[1].textureID = tileTextureID;
+	state.platforms[1].position = glm::vec3(-1, -3.25f, 0);
+	state.platforms[2].textureID = tileTextureID;
+	state.platforms[2].position = glm::vec3(1, -3.25f, 0);
+
+	state.platforms[3].textureID = tileTextureID;
+	state.platforms[3].position = glm::vec3(3.25f, -3.25f, 0);
+	state.platforms[4].textureID = tileTextureID;
+	state.platforms[4].position = glm::vec3(1, -2.25f, 0);
 
 	viewMatrix = glm::mat4(1.0f);
 	modelMatrix = glm::mat4(1.0f);
@@ -95,12 +119,24 @@ void ProcessInput() {
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
 			case SDLK_SPACE:
-				// Some sort of action
+					state.player.Jump();
 				break;
-
 			}
 			break;
 		}
+	}
+
+	state.player.velocity.x = 0;
+	// Check for pressed/held keys below
+	const Uint8* keys = SDL_GetKeyboardState(NULL);
+
+	if (keys[SDL_SCANCODE_A])
+	{
+		state.player.velocity.x = -3.0f;
+	}
+	else if (keys[SDL_SCANCODE_D])
+	{
+		state.player.velocity.x = 3.0f;
 	}
 }
 
@@ -121,7 +157,7 @@ void Update() {
 
 	while (deltaTime >= FIXED_TIMESTEP) {
 		// Update. Notice it's FIXED_TIMESTEP. Not deltaTime
-		state.player.Update(FIXED_TIMESTEP);
+		state.player.Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
 
 		deltaTime -= FIXED_TIMESTEP;
 	}
@@ -134,6 +170,10 @@ void Render() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	state.player.Render(&program);
+
+	for (int i = 0; i < PLATFORM_COUNT; i++) {
+		state.platforms[i].Render(&program);
+	}
 
 	SDL_GL_SwapWindow(displayWindow);
 }
