@@ -1,6 +1,4 @@
-# CS3113 - Project2: Pong
-Use "W" and "S" to control the left racket  
+# CS3113 - Project4: Rise of the AI
 
-Use "↑" and "↓" to control the right racket  
-
+Beat all the enemies! (by stepping on their head)
 
