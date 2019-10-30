@@ -7,16 +7,19 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_opengl.h>
-#include <SDL_image.h>
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 #include "Entity.h"
 #include "Map.h"
+#include "Util.h"
+#include "Scene.h"
+#include "Level1.h"
+#include "Level2.h"
+
+Scene *currentScene;
+Scene *sceneList[2];
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
@@ -24,53 +27,20 @@ bool gameIsRunning = true;
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
-#define ENEMY_COUNT 1
+GLuint fontTextureID;
 
-struct GameState {
-	Entity player;
-	Entity enemies[ENEMY_COUNT];
-	Map *map;
-};
-
-#define LEVEL1_WIDTH 14
-#define LEVEL1_HEIGHT 5
-unsigned int level1_data[] =
-{
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-1, 1, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,
-2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2
-};
-
-GameState state;
-
-GLuint LoadTexture(const char* filePath) {
-	int w, h, n;
-	unsigned char* image = stbi_load(filePath, &w, &h, &n, STBI_rgb_alpha);
-
-	if (image == NULL) {
-		std::cout << "Unable to load image. Make sure the path is correct\n";
-		assert(false);
-	}
-
-	GLuint textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	stbi_image_free(image);
-	return textureID;
+void SwitchToScene(Scene *scene) {
+ currentScene = scene;
+ currentScene->Initialize();
 }
+
 
 void Initialize() {
 	SDL_Init(SDL_INIT_VIDEO);
 	displayWindow = SDL_CreateWindow("Platformer!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
+
 
 #ifdef _WINDOWS
 	glewInit();
@@ -81,17 +51,7 @@ void Initialize() {
 
 	program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
 
-
-	GLuint mapTextureID = LoadTexture("tileset.png");
-	state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 4, 1);
-
-	state.player.entityType = PLAYER;
-	state.player.isStatic = false;
-	state.player.width = 1.0f;
-	state.player.position = glm::vec3(0, 3, 0);
-	state.player.acceleration = glm::vec3(0, -9.81f, 0);
-	state.player.textureID = LoadTexture("me.png");
-
+	fontTextureID = Util::LoadTexture("font1.png");
 
 	viewMatrix = glm::mat4(1.0f);
 	modelMatrix = glm::mat4(1.0f);
@@ -108,6 +68,11 @@ void Initialize() {
 
 
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+
+	sceneList[0] = new Level1();
+	sceneList[1] = new Level2();
+	SwitchToScene(sceneList[0]);
+
 }
 
 void ProcessInput() {
@@ -122,7 +87,7 @@ void ProcessInput() {
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
 			case SDLK_SPACE:
-				state.player.Jump();
+				currentScene->state.player.Jump();
 				break;
 
 			}
@@ -130,18 +95,18 @@ void ProcessInput() {
 		}
 	}
 
-	state.player.velocity.x = 0;
+	currentScene->state.player.velocity.x = 0;
 
 	// Check for pressed/held keys below
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 	if (keys[SDL_SCANCODE_A])
 	{
-		state.player.velocity.x = -3.0f;
+		currentScene->state.player.velocity.x = -3.0f;
 	}
 	else if (keys[SDL_SCANCODE_D])
 	{
-		state.player.velocity.x = 3.0f;
+		currentScene->state.player.velocity.x = 3.0f;
 	}
 }
 
@@ -162,18 +127,24 @@ void Update() {
 
 	while (deltaTime >= FIXED_TIMESTEP) {
 
-		state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT, state.map);
+		//state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT, state.map);
+		currentScene->Update(FIXED_TIMESTEP);
 
 		deltaTime -= FIXED_TIMESTEP;
 	}
 
 	accumulator = deltaTime;
 
-	state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT, state.map);
+	//state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT, state.map);
 
 	viewMatrix = glm::mat4(1.0f);
-	viewMatrix = glm::translate(viewMatrix,
-		glm::vec3(-state.player.position.x, 0, 0));
+	if (currentScene->state.player.position.x > 5) {
+		viewMatrix = glm::translate(viewMatrix, glm::vec3(-currentScene->state.player.position.x, 3.75, 0));
+	}
+	else {
+		viewMatrix = glm::translate(viewMatrix, glm::vec3(-5, 3.75, 0));
+	}
+
 }
 
 
@@ -182,8 +153,9 @@ void Render() {
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	state.player.Render(&program);
-	state.map->Render(&program);
+	currentScene->Render(&program);
+
+	Util::DrawText(&program, fontTextureID, "Hello!", 1.0f, -0.5f, glm::vec3(5, -3, 0));
 
 	SDL_GL_SwapWindow(displayWindow);
 }
@@ -196,6 +168,7 @@ int main(int argc, char* argv[]) {
 	Initialize();
 
 	while (gameIsRunning) {
+		if (currentScene->state.nextLevel >= 0) SwitchToScene(sceneList[currentScene->state.nextLevel]);
 		ProcessInput();
 		Update();
 		Render();
