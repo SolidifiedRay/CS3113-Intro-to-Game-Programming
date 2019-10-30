@@ -41,6 +41,9 @@ public:
     
     void CheckCollisionsX(Entity *objects, int objectCount);
     void CheckCollisionsY(Entity *objects, int objectCount);
+
+	void CheckCollisionsX(Map *map);
+	void CheckCollisionsY(Map *map);
     
     void Update(float deltaTime, Entity *objects, int objectCount, Map *map);
     void Render(ShaderProgram *program);

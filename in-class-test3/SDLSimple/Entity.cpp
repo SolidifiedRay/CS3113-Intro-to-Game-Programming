@@ -90,22 +90,89 @@ void Entity::Jump()
 }
 
 
+void Entity::CheckCollisionsY(Map *map)
+{
+	// Probes for tiles
+	glm::vec3 top = glm::vec3(position.x, position.y + (height / 2), position.z);
+	glm::vec3 top_left = glm::vec3(position.x - (width / 2), position.y + (height / 2), position.z);
+	glm::vec3 top_right = glm::vec3(position.x + (width / 2), position.y + (height / 2), position.z);
+
+	glm::vec3 bottom = glm::vec3(position.x, position.y - (height / 2), position.z);
+	glm::vec3 bottom_left = glm::vec3(position.x - (width / 2), position.y - (height / 2), position.z);
+	glm::vec3 bottom_right = glm::vec3(position.x + (width / 2), position.y - (height / 2), position.z);
+
+	float penetration_x = 0;
+	float penetration_y = 0;
+	if (map->IsSolid(top, &penetration_x, &penetration_y) && velocity.y > 0) {
+		position.y -= penetration_y;
+		velocity.y = 0;
+		collidedTop = true;
+	}
+	else if (map->IsSolid(top_left, &penetration_x, &penetration_y) && velocity.y > 0) {
+		position.y -= penetration_y;
+		velocity.y = 0;
+		collidedTop = true;
+	}
+	else if (map->IsSolid(top_right, &penetration_x, &penetration_y) && velocity.y > 0) {
+		position.y -= penetration_y;
+		velocity.y = 0;
+		collidedTop = true;
+	}
+	if (map->IsSolid(bottom, &penetration_x, &penetration_y) && velocity.y < 0) {
+		position.y += penetration_y;
+		velocity.y = 0;
+		collidedBottom = true;
+	}
+	else if (map->IsSolid(bottom_left, &penetration_x, &penetration_y) && velocity.y < 0) {
+		position.y += penetration_y;
+		velocity.y = 0;
+		collidedBottom = true;
+	}
+	else if (map->IsSolid(bottom_right, &penetration_x, &penetration_y) && velocity.y < 0) {
+		position.y += penetration_y;
+		velocity.y = 0;
+		collidedBottom = true;
+	}
+}
+
+void Entity::CheckCollisionsX(Map *map)
+{
+	// Probes for tiles
+	glm::vec3 left = glm::vec3(position.x - (width / 2), position.y, position.z);
+	glm::vec3 right = glm::vec3(position.x + (width / 2), position.y, position.z);
+
+	float penetration_x = 0;
+	float penetration_y = 0;
+	if (map->IsSolid(left, &penetration_x, &penetration_y) && velocity.x < 0) {
+		position.x += penetration_x;
+		velocity.x = 0;
+		collidedLeft = true;
+	}
+
+	if (map->IsSolid(right, &penetration_x, &penetration_y) && velocity.x > 0) {
+		position.x -= penetration_x;
+		velocity.x = 0;
+		collidedRight = true;
+	}
+}
 
 
 void Entity::Update(float deltaTime, Entity *objects, int objectCount, Map *map)
 {
-    collidedTop = false;
-    collidedBottom = false;
-    collidedLeft = false;
-    collidedRight = false;
-    
-    velocity += acceleration * deltaTime;
-    
-    position.y += velocity.y * deltaTime;        // Move on Y
-    CheckCollisionsY(objects, objectCount);    // Fix if needed
-    
-    position.x += velocity.x * deltaTime;        // Move on X
-    CheckCollisionsX(objects, objectCount);    // Fix if needed
+	collidedTop = false;
+	collidedBottom = false;
+	collidedLeft = false;
+	collidedRight = false;
+
+	velocity += acceleration * deltaTime;
+
+	position.y += velocity.y * deltaTime; // Move on Y
+	CheckCollisionsY(map);
+	CheckCollisionsY(objects, objectCount); // Fix if needed
+
+	position.x += velocity.x * deltaTime; // Move on X
+	CheckCollisionsX(map);
+	CheckCollisionsX(objects, objectCount); // Fix if needed
 }
 
 

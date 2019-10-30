@@ -32,6 +32,17 @@ struct GameState {
 	Map *map;
 };
 
+#define LEVEL1_WIDTH 14
+#define LEVEL1_HEIGHT 5
+unsigned int level1_data[] =
+{
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+1, 1, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,
+2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2
+};
+
 GameState state;
 
 GLuint LoadTexture(const char* filePath) {
@@ -67,7 +78,12 @@ void Initialize() {
 
 	glViewport(0, 0, 640, 480);
 
+
 	program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
+
+
+	GLuint mapTextureID = LoadTexture("tileset.png");
+	state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 4, 1);
 
 	state.player.entityType = PLAYER;
 	state.player.isStatic = false;
@@ -152,13 +168,22 @@ void Update() {
 	}
 
 	accumulator = deltaTime;
+
+	state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT, state.map);
+
+	viewMatrix = glm::mat4(1.0f);
+	viewMatrix = glm::translate(viewMatrix,
+		glm::vec3(-state.player.position.x, 0, 0));
 }
 
 
 void Render() {
+	program.SetViewMatrix(viewMatrix);
+
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	state.player.Render(&program);
+	state.map->Render(&program);
 
 	SDL_GL_SwapWindow(displayWindow);
 }
