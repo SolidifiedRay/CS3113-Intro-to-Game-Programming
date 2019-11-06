@@ -52,7 +52,11 @@ void Initialize() {
 	glViewport(0, 0, 640, 480);
 
 
-	program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
+	//program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
+	//program.Load("shaders/vertex_textured.glsl","shaders/effects_textured.glsl");
+	program.Load("shaders/vertex_lit.glsl","shaders/fragment_lit.glsl");
+
+
 
 	fontTextureID = Util::LoadTexture("font1.png");
 
@@ -136,7 +140,8 @@ void Update() {
 
 		//state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT, state.map);
 		currentScene->Update(FIXED_TIMESTEP);
-		effects->Update(FIXED_TIMESTEP);
+		effects->Update(FIXED_TIMESTEP);
+
 		deltaTime -= FIXED_TIMESTEP;
 	}
 
@@ -160,7 +165,8 @@ void Update() {
 void Render() {
 	glUseProgram(program.programID);
 	program.SetViewMatrix(viewMatrix);
-
+	program.SetLightPosition(currentScene->state.player.position);
+	program.SetLightPosition2(glm::vec3(15, -5, 0));
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	currentScene->Render(&program);

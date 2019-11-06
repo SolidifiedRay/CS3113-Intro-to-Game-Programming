@@ -26,6 +26,9 @@ void ShaderProgram::Load(const char *vertexShaderFile, const char *fragmentShade
     viewMatrixUniform = glGetUniformLocation(programID, "viewMatrix");
 	colorUniform = glGetUniformLocation(programID, "color");
     
+	lightPositionUniform = glGetUniformLocation(programID, "lightPosition");
+	lightPositionUniform2 = glGetUniformLocation(programID, "lightPosition");
+
     positionAttribute = glGetAttribLocation(programID, "position");
     texCoordAttribute = glGetAttribLocation(programID, "texCoord");
 	
@@ -37,6 +40,17 @@ void ShaderProgram::Cleanup() {
     glDeleteProgram(programID);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+}
+
+void ShaderProgram::SetLightPosition(glm::vec3 position) {
+	glUseProgram(programID);
+	glUniform2f(lightPositionUniform, position.x, position.y);
+}
+
+
+void ShaderProgram::SetLightPosition2(glm::vec3 position) {
+	glUseProgram(programID);
+	glUniform2f(lightPositionUniform2, position.x, position.y);
 }
 
 GLuint ShaderProgram::LoadShaderFromFile(const std::string &shaderFile, GLenum type) {

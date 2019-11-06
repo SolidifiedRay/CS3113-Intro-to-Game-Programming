@@ -22,11 +22,15 @@ class ShaderProgram {
         void SetViewMatrix(const glm::mat4 &matrix);
 	
 		void SetColor(float r, float g, float b, float a);
+		void SetLightPosition(glm::vec3 position);
+		void SetLightPosition2(glm::vec3 position);
 	
         GLuint LoadShaderFromString(const std::string &shaderContents, GLenum type);
         GLuint LoadShaderFromFile(const std::string &shaderFile, GLenum type);
     
         GLuint programID;
+		GLuint lightPositionUniform;
+		GLuint lightPositionUniform2;
     
         GLuint projectionMatrixUniform;
         GLuint modelMatrixUniform;
