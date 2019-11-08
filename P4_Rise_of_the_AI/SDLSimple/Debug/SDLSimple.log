@@ -1,3 +1,7 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (P1_Simple_2D_Scene.vcxproj, SDLSimple.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Entity.cpp
+d:\cs3113\cs3113\p4_rise_of_the_ai\sdlsimple\entity.cpp(182): warning C4018: '<': signed/unsigned mismatch
+d:\cs3113\cs3113\p4_rise_of_the_ai\sdlsimple\entity.cpp(211): warning C4244: 'argument': conversion from 'float' to 'GLsizei', possible loss of data
   main.cpp
+  Generating Code...
   SDLSimple.vcxproj -> D:\CS3113\CS3113\P4_Rise_of_the_AI\Debug\SDL_test.exe
