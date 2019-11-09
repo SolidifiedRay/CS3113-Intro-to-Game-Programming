@@ -9,6 +9,7 @@ Entity::Entity()
     speed = 0;
     width = 1;
     height = 1;
+	life = 3;
 }
 
 bool Entity::CheckCollision(Entity other)
@@ -20,17 +21,14 @@ bool Entity::CheckCollision(Entity other)
     float ydist = fabs(position.y - other.position.y) - ((height + other.height) / 2.0f);
 
     if (xdist < 0 && ydist < 0)
-    {
-        if (entityType == PLAYER && other.entityType == COIN)
-        {
-            other.isActive = false;
-        }
-        
+    {    
         return true;
     }
     
     return false;
 }
+
+
 
 void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 {
@@ -46,11 +44,22 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
                 position.y -= penetrationY;
                 velocity.y = 0;
                 collidedTop = true;
+				if (entityType == PLAYER && object.entityType == ENEMY) {
+					if (life > 0){
+						life -= 1;
+					}
+					else if (life == 0) {
+						isActive = false;
+					}
+				}
             }
             else if (velocity.y < 0) {
                 position.y += penetrationY;
                 velocity.y = 0;
                 collidedBottom = true;
+				if (entityType == PLAYER && object.entityType == ENEMY) {
+					objects[i].isActive = false;
+				}
             }
         }
     }
@@ -70,11 +79,27 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
                 position.x -= penetrationX;
                 velocity.x = 0;
                 collidedRight = true;
+				if (entityType == PLAYER && object.entityType == ENEMY) {
+					if (life > 0) {
+						life -= 1;
+					}
+					else if (life == 0) {
+						isActive = false;
+					}
+				}
             }
             else if (velocity.x < 0) {
                 position.x += penetrationX;
                 velocity.x = 0;
                 collidedLeft = true;
+				if (entityType == PLAYER && object.entityType == ENEMY) {
+					if (life > 0) {
+						life -= 1;
+					}
+					else if (life == 0) {
+						isActive = false;
+					}
+				}
             }
         }
     }
@@ -85,7 +110,7 @@ void Entity::Jump()
 {
     if (collidedBottom)
     {
-        velocity.y = 5.0f;
+        velocity.y = 6.2f;
     }
 }
 
@@ -156,8 +181,42 @@ void Entity::CheckCollisionsX(Map *map)
 	}
 }
 
+void Entity::AI(Entity player) {
+	switch (aiState) {
+	case IDLE:
+		if (glm::distance(position, player.position) < 3.0f) {
+			aiState = WALKING;
+		}
+		break;
+	case WALKING:
+		if (player.position.x > position.x) {
+			velocity.x = 1.0f;
+		}
+		else {
+			velocity.x = -1.0f;
+		}
+		break;
+	case Flying:
+		if (position.y < -1) {
+			velocity.y = 3.0f;
+		}
+		else if (position.y > 2) {
+			velocity.y = -3.0f;
+		}
+		break;
+	case PATROLLING:
+		if (position.x < -1.4) {
+			velocity.x = 1.0f;
+		}
+		else if (position.x > 0.3) {
+			velocity.x = -1.0f;
+		}
+		break;
+	}
 
-void Entity::Update(float deltaTime, Entity *objects, int objectCount, Map *map)
+}
+
+void Entity::Update(float deltaTime, Entity player, Entity *objects, int objectCount, Entity* enemies, int enemyCount, Map *map)
 {
 	collidedTop = false;
 	collidedBottom = false;
@@ -166,13 +225,27 @@ void Entity::Update(float deltaTime, Entity *objects, int objectCount, Map *map)
 
 	velocity += acceleration * deltaTime;
 
+	if (entityType == ENEMY) {
+		AI(player);
+	}
+
 	position.y += velocity.y * deltaTime; // Move on Y
 	CheckCollisionsY(map);
 	CheckCollisionsY(objects, objectCount); // Fix if needed
 
+	if (entityType == PLAYER) {
+		CheckCollisionsY(enemies, enemyCount);
+	}
+
+
 	position.x += velocity.x * deltaTime; // Move on X
 	CheckCollisionsX(map);
 	CheckCollisionsX(objects, objectCount); // Fix if needed
+
+	if (entityType == PLAYER) {
+		CheckCollisionsX(enemies, enemyCount);
+	}
+
 }
 
 

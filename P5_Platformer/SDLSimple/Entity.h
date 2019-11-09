@@ -13,13 +13,17 @@
 
 #include "Map.h"
 
-enum  EntityType { PLAYER, PLATFORM, COIN };
-
+enum  EntityType { PLAYER, PLATFORM, LIFE, ENEMY };
+enum AIType { WALKER };
+enum AIState { IDLE, WALKING, Flying, PATROLLING };
 
 class Entity {
 public:
     
     EntityType entityType;
+	AIType aitype;
+	AIState aiState;
+
     bool isStatic;
     bool isActive;
     
@@ -27,6 +31,7 @@ public:
     glm::vec3 velocity;
     glm::vec3 acceleration;
     
+	int life;
     float width;
     float height;
     
@@ -37,18 +42,20 @@ public:
     Entity();
     
     bool CheckCollision(Entity other);
-    
+
     void CheckCollisionsX(Entity *objects, int objectCount);
     void CheckCollisionsY(Entity *objects, int objectCount);
 
 	void CheckCollisionsX(Map *map);
 	void CheckCollisionsY(Map *map);
     
-    void Update(float deltaTime, Entity *objects, int objectCount, Map *map);
+	void AI(Entity player);
+
+    void Update(float deltaTime, Entity player, Entity *objects, int objectCount, Entity *enemies, int enemyCount, Map *map);
     void Render(ShaderProgram *program);
     
     void Jump();
-    
+
     bool collidedTop;
     bool collidedBottom;
     bool collidedLeft;

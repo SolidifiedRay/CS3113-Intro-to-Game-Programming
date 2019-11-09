@@ -19,18 +19,49 @@ void Level1::Initialize() {
 	state.player.entityType = PLAYER;
 	state.player.isStatic = false;
 	state.player.width = 1.0f;
-	state.player.position = glm::vec3(5, 0, 0);
+	state.player.position = glm::vec3(4, 0, 0);
 	state.player.acceleration = glm::vec3(0, -9.81f, 0);
 	state.player.textureID = Util::LoadTexture("player.png");
 	state.nextLevel = -1;
+
+	GLuint devilTextureID = Util::LoadTexture("animal.png");
+	state.enemies[0].entityType = ENEMY;
+	state.enemies[0].textureID = devilTextureID;
+	state.enemies[0].isStatic = false;
+	state.enemies[0].position = glm::vec3(7, 0, 0);
+	state.enemies[0].acceleration = glm::vec3(0, -9.81f, 0);
+	state.enemies[0].aiState = PATROLLING;
+
+	state.enemies[1].entityType = ENEMY;
+	state.enemies[1].textureID = devilTextureID;
+	state.enemies[1].isStatic = false;
+	state.enemies[1].position = glm::vec3(12, 2, 0);
+	state.enemies[1].acceleration = glm::vec3(0, -9.81f, 0);
+	state.enemies[1].aiState = IDLE;
+
 }
+
 void Level1::Update(float deltaTime) {
-	state.player.Update(deltaTime, NULL, 0, state.map);
+	state.player.Update(deltaTime, state.player, NULL, 0, state.enemies, ENEMY_COUNT, state.map);
 	if (state.player.position.x > 12) {
-		state.nextLevel = 1;
+		state.nextLevel = 2;
 	}
+	for (int i = 0; i < ENEMY_COUNT; i++) {
+		state.enemies[i].Update(deltaTime, state.player, NULL, 0, state.enemies, ENEMY_COUNT, state.map);
+	}
+	
 }
+
 void Level1::Render(ShaderProgram *program) {
 	state.map->Render(program);
-	state.player.Render(program);
+
+	if (state.player.isActive == true) {
+		state.player.Render(program);
+	}
+
+	for (int i = 0; i < ENEMY_COUNT; i++) {
+		if (state.enemies[i].isActive == true) {
+			state.enemies[i].Render(program);
+		}
+	}
 }

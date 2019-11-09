@@ -18,9 +18,11 @@
 #include "Scene.h"
 #include "Level1.h"
 #include "Level2.h"
+#include "Level3.h"
+#include "MainMenu.h"
 
 Scene *currentScene;
-Scene *sceneList[2];
+Scene *sceneList[4];
 
 Effects *effects;
 
@@ -76,8 +78,10 @@ void Initialize() {
 
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
-	sceneList[0] = new Level1();
-	sceneList[1] = new Level2();
+	sceneList[0] = new MainMenu();
+	sceneList[1] = new Level1();
+	sceneList[2] = new Level2();
+	sceneList[3] = new Level3();
 	SwitchToScene(sceneList[0]);
 
 	effects = new Effects(projectionMatrix, viewMatrix);
@@ -98,11 +102,15 @@ void ProcessInput() {
 			case SDLK_SPACE:
 				currentScene->state.player.Jump();
 				break;
-			
+			case SDLK_RETURN:
+				if (currentScene->state.nextLevel == -4) {
+					SwitchToScene(sceneList[1]);
+				}
+				break;
 			case SDLK_k:
 				effects->Start(SHAKE, 2.0f);
+				break;
 			}
-			break;
 		}
 	}
 
@@ -171,7 +179,21 @@ void Render() {
 
 	currentScene->Render(&program);
 
-	Util::DrawText(&program, fontTextureID, "Hello!", 1.0f, -0.5f, glm::vec3(5, -3, 0));
+	if (currentScene->state.nextLevel == -4) {
+		Util::DrawText(&program, fontTextureID, "PLATFORMER", 1.0f, -0.5f, glm::vec3(3, -2, 0));
+		Util::DrawText(&program, fontTextureID, "Press Enter to Play", 1.0f, -0.5f, glm::vec3(0.5, -4, 0));
+	}
+
+	if (currentScene->state.nextLevel == -1) {
+		Util::DrawText(&program, fontTextureID, "LEVEL1", 1.0f, -0.5f, glm::vec3(4, -1, 0));
+	}
+	if (currentScene->state.nextLevel == -2) {
+		Util::DrawText(&program, fontTextureID, "LEVEL2", 1.0f, -0.5f, glm::vec3(4, -1, 0));
+	}
+	if (currentScene->state.nextLevel == -3) {
+		Util::DrawText(&program, fontTextureID, "LEVEL3", 1.0f, -0.5f, glm::vec3(4, -1, 0));
+	}
+	
 
 	effects->Render();
 	SDL_GL_SwapWindow(displayWindow);
