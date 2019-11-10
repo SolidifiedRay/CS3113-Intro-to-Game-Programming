@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #endif
 
+#include <SDL_mixer.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include "glm/mat4x4.hpp"
@@ -39,6 +40,8 @@ public:
 	float width;
 	float height;
 
+	Mix_Chunk *jump;
+	Mix_Chunk *hit;
 	float speed;
 
 	GLuint textureID;

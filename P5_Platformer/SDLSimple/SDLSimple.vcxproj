@@ -147,9 +147,6 @@
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Media Include="bgm.mp3" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

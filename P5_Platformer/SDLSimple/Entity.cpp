@@ -14,6 +14,8 @@ Entity::Entity()
 	dead = false;
 	shakeEffect = false;
 	win = false;
+	jump = Mix_LoadWAV("jump.wav");
+	hit = Mix_LoadWAV("hit.wav");
 }
 
 bool Entity::CheckCollision(Entity other)
@@ -49,6 +51,7 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 				velocity.y = 0;
 				collidedTop = true;
 				if (entityType == PLAYER && object.entityType == ENEMY) {
+					Mix_PlayChannel(-1, hit, 0);
 					shakeEffect = true;
 					if (life > 0 ) {
 						life -= 1;
@@ -65,11 +68,12 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 				}
 			}
 			else if (velocity.y < 0) {
-				shakeEffect = true;
 				position.y += penetrationY;
 				velocity.y = 0;
 				collidedBottom = true;
 				if (entityType == PLAYER && object.entityType == ENEMY) {
+					shakeEffect = true;
+					Mix_PlayChannel(-1, hit, 0);
 					objects[i].isActive = false;
 				}
 			}
@@ -92,6 +96,7 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 				velocity.x = 0;
 				collidedRight = true;
 				if (entityType == PLAYER && object.entityType == ENEMY) {
+					Mix_PlayChannel(-1, hit, 0);
 					shakeEffect = true;
 					if (life > 0) {
 						life -= 1;
@@ -112,6 +117,7 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 				velocity.x = 0;
 				collidedLeft = true;
 				if (entityType == PLAYER && object.entityType == ENEMY) {
+					Mix_PlayChannel(-1, hit, 0);
 					shakeEffect = true;
 					if (life > 0) {
 						life -= 1;
@@ -136,6 +142,7 @@ void Entity::Jump()
 	if (collidedBottom)
 	{
 		velocity.y = 6.2f; 
+		Mix_PlayChannel(-1, jump, 0);
 	}
 }
 

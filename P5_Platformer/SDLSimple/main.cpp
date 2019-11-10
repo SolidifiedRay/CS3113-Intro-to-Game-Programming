@@ -37,7 +37,7 @@ glm::vec3 lifeVec, gameOverVec;
 GLuint fontTextureID;
 
 int nextLevelLife;
-Mix_Music *bgm; 
+Mix_Music *bgm;
 
 void SwitchToScene(Scene *scene) {
 	currentScene = scene;
@@ -49,8 +49,10 @@ void Initialize() {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	displayWindow = SDL_CreateWindow("Platformer!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
-	SDL_GL_MakeCurrent(displayWindow, context);
-	bgm = Mix_LoadMUS("bgm.mp3");
+	SDL_GL_MakeCurrent(displayWindow, context); 
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+	bgm = Mix_LoadMUS("bgm.wav");
+
 	Mix_PlayMusic(bgm, -1);
 
 #ifdef _WINDOWS
@@ -191,7 +193,6 @@ void Update() {
 	if (currentScene->state.player.restart && !currentScene->state.player.dead) {
 		effects->Start(FADEIN, 0.5f);
 	}
-
 }
 
 
@@ -253,6 +254,8 @@ void Render() {
 
 void Shutdown() {
 	Mix_FreeMusic(bgm);
+	Mix_FreeChunk(currentScene->state.player.hit);
+	Mix_FreeChunk(currentScene->state.player.jump);
 	SDL_Quit();
 }
 
