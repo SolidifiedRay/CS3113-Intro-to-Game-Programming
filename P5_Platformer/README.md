@@ -3,4 +3,4 @@ Press "A" and "D" to move
 
 Press "Space" to jump
 
-Kill the enmey by jumping on their heads
+Kill enmeies by jumping on their heads
