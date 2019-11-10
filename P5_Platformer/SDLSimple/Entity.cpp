@@ -2,116 +2,141 @@
 
 Entity::Entity()
 {
-    entityType = PLATFORM;
-    isStatic = true;
-    isActive = true;
-    position = glm::vec3(0);
-    speed = 0;
-    width = 1;
-    height = 1;
+	entityType = PLATFORM;
+	isStatic = true;
+	isActive = true; 
+	restart = false;
+	position = glm::vec3(0);
+	speed = 0;
+	width = 1;
+	height = 1;
 	life = 3;
+	dead = false;
+	shakeEffect = false;
+	win = false;
 }
 
 bool Entity::CheckCollision(Entity other)
 {
-    if (isStatic == true) return false;
-    if (isActive == false || other.isActive == false) return false;
-    
-    float xdist = fabs(position.x - other.position.x) - ((width + other.width) / 2.0f);
-    float ydist = fabs(position.y - other.position.y) - ((height + other.height) / 2.0f);
+	if (isStatic == true) return false;
+	if (isActive == false || other.isActive == false) return false;
 
-    if (xdist < 0 && ydist < 0)
-    {    
-        return true;
-    }
-    
-    return false;
+	float xdist = fabs(position.x - other.position.x) - ((width + other.width) / 2.0f);
+	float ydist = fabs(position.y - other.position.y) - ((height + other.height) / 2.0f);
+
+	if (xdist < 0 && ydist < 0)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 
 
 void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 {
-    for (int i = 0; i < objectCount; i++)
-    {
-        Entity object = objects[i];
-        
-        if (CheckCollision(object))
-        {
-            float ydist = fabs(position.y - object.position.y);
-            float penetrationY = fabs(ydist - (height / 2) - (object.height / 2));
-            if (velocity.y > 0) {
-                position.y -= penetrationY;
-                velocity.y = 0;
-                collidedTop = true;
+	for (int i = 0; i < objectCount; i++)
+	{
+		Entity object = objects[i];
+
+		if (CheckCollision(object))
+		{
+			float ydist = fabs(position.y - object.position.y);
+			float penetrationY = fabs(ydist - (height / 2) - (object.height / 2));
+			if (velocity.y > 0) {
+				position.y -= penetrationY;
+				velocity.y = 0;
+				collidedTop = true;
 				if (entityType == PLAYER && object.entityType == ENEMY) {
-					if (life > 0){
+					shakeEffect = true;
+					if (life > 0 ) {
 						life -= 1;
+						restart = true;
+						if (life == 0) {
+							isActive = false;
+							dead = true;
+						}
 					}
 					else if (life == 0) {
 						isActive = false;
+						dead = true;
 					}
 				}
-            }
-            else if (velocity.y < 0) {
-                position.y += penetrationY;
-                velocity.y = 0;
-                collidedBottom = true;
+			}
+			else if (velocity.y < 0) {
+				shakeEffect = true;
+				position.y += penetrationY;
+				velocity.y = 0;
+				collidedBottom = true;
 				if (entityType == PLAYER && object.entityType == ENEMY) {
 					objects[i].isActive = false;
 				}
-            }
-        }
-    }
+			}
+		}
+	}
 }
 
 void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 {
-    for (int i = 0; i < objectCount; i++)
-    {
-        Entity object = objects[i];
-        
-        if (CheckCollision(object))
-        {
-            float xdist = fabs(position.x - object.position.x);
-            float penetrationX = fabs(xdist - (width / 2) - (object.width / 2));
-            if (velocity.x > 0) {
-                position.x -= penetrationX;
-                velocity.x = 0;
-                collidedRight = true;
+	for (int i = 0; i < objectCount; i++)
+	{
+		Entity object = objects[i];
+
+		if (CheckCollision(object))
+		{
+			float xdist = fabs(position.x - object.position.x);
+			float penetrationX = fabs(xdist - (width / 2) - (object.width / 2));
+			if (velocity.x > 0) {
+				position.x -= penetrationX;
+				velocity.x = 0;
+				collidedRight = true;
 				if (entityType == PLAYER && object.entityType == ENEMY) {
+					shakeEffect = true;
 					if (life > 0) {
 						life -= 1;
+						restart = true;
+						if (life == 0) {
+							isActive = false;
+							dead = true;
+						}
+					}
+					else if (life == 0) {
+						isActive = false;
+						dead = true;
+					}
+				}
+			}
+			else if (velocity.x < 0) {
+				position.x += penetrationX;
+				velocity.x = 0;
+				collidedLeft = true;
+				if (entityType == PLAYER && object.entityType == ENEMY) {
+					shakeEffect = true;
+					if (life > 0) {
+						life -= 1;
+						restart = true;
+						if (life == 0) {
+							isActive = false;
+							dead = true;
+						}
 					}
 					else if (life == 0) {
 						isActive = false;
 					}
 				}
-            }
-            else if (velocity.x < 0) {
-                position.x += penetrationX;
-                velocity.x = 0;
-                collidedLeft = true;
-				if (entityType == PLAYER && object.entityType == ENEMY) {
-					if (life > 0) {
-						life -= 1;
-					}
-					else if (life == 0) {
-						isActive = false;
-					}
-				}
-            }
-        }
-    }
+			}
+		}
+	}
 }
 
 
 void Entity::Jump()
 {
-    if (collidedBottom)
-    {
-        velocity.y = 6.2f;
-    }
+	if (collidedBottom)
+	{
+		velocity.y = 6.2f; 
+	}
 }
 
 
@@ -197,10 +222,10 @@ void Entity::AI(Entity player) {
 		}
 		break;
 	case Flying:
-		if (position.y < -1) {
+		if (position.y < -4.5) {
 			velocity.y = 3.0f;
 		}
-		else if (position.y > 2) {
+		else if (position.y > -1) {
 			velocity.y = -3.0f;
 		}
 		break;
@@ -251,24 +276,24 @@ void Entity::Update(float deltaTime, Entity player, Entity *objects, int objectC
 
 
 void Entity::Render(ShaderProgram *program) {
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, position);
-    program->SetModelMatrix(modelMatrix);
-    
-    float vertices[]  = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
-    float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    
-    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
-    glEnableVertexAttribArray(program->positionAttribute);
-    
-    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
-    glEnableVertexAttribArray(program->texCoordAttribute);
-    
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    
-    glDisableVertexAttribArray(program->positionAttribute);
-    glDisableVertexAttribArray(program->texCoordAttribute);
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::translate(modelMatrix, position);
+	program->SetModelMatrix(modelMatrix);
+
+	float vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
+	float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+	glEnableVertexAttribArray(program->positionAttribute);
+
+	glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+	glEnableVertexAttribArray(program->texCoordAttribute);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(program->positionAttribute);
+	glDisableVertexAttribArray(program->texCoordAttribute);
 }
 

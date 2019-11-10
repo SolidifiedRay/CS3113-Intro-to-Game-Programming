@@ -12,13 +12,11 @@
 #include "Entity.h"
 #include "Map.h"
 
-#define ENEMY_COUNT 2
-#define LIFE_COUNT 2
+#define ENEMY_COUNT 4
 
 struct GameState {
 	Entity player;
 	Entity enemies[ENEMY_COUNT];
-	Entity life[LIFE_COUNT];
 	Map *map;
 	int nextLevel;
 };

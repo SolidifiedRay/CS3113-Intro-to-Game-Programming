@@ -1,16 +1,16 @@
 #include "Level2.h"
-#define LEVEL2_WIDTH 14
+#define LEVEL2_WIDTH 30
 #define LEVEL2_HEIGHT 8
 unsigned int level2_data[] =
 {
- 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 3, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 3, 0, 2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
- 3, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
- 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
 };
 
 void Level2::Initialize() {
@@ -24,7 +24,7 @@ void Level2::Initialize() {
 	state.player.textureID = Util::LoadTexture("player.png");
 	state.nextLevel = -2;
 
-	GLuint devilTextureID = Util::LoadTexture("animal.png");
+	GLuint devilTextureID = Util::LoadTexture("enemy.png");
 	state.enemies[0].entityType = ENEMY;
 	state.enemies[0].textureID = devilTextureID;
 	state.enemies[0].isStatic = false;
@@ -38,11 +38,29 @@ void Level2::Initialize() {
 	state.enemies[1].position = glm::vec3(12, 2, 0);
 	state.enemies[1].acceleration = glm::vec3(0, -9.81f, 0);
 	state.enemies[1].aiState = IDLE;
+
+	state.enemies[2].entityType = ENEMY;
+	state.enemies[2].textureID = devilTextureID;
+	state.enemies[2].isStatic = false;
+	state.enemies[2].position = glm::vec3(15, 2, 0);
+	state.enemies[2].acceleration = glm::vec3(0, -9.81f, 0);
+	state.enemies[2].aiState = IDLE;
+
+	state.enemies[3].entityType = ENEMY;
+	state.enemies[3].textureID = devilTextureID;
+	state.enemies[3].isStatic = false;
+	state.enemies[3].position = glm::vec3(14, -3, 0);
+	state.enemies[3].acceleration = glm::vec3(0, -9.81f, 0);
+	state.enemies[3].aiState = IDLE;
 }
 
 void Level2::Update(float deltaTime) {
+	if (state.player.dead == false and state.player.restart == true) {
+		state.player.position = glm::vec3(4, 0, 0);
+		state.player.restart = false;
+	}
 	state.player.Update(deltaTime, state.player, NULL, 0, state.enemies, ENEMY_COUNT, state.map);
-	if (state.player.position.x > 12) {
+	if (state.player.position.x > 22) {
 		state.nextLevel = 3;
 	}
 	for (int i = 0; i < ENEMY_COUNT; i++) {

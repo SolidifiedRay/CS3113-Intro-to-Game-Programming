@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #endif
 
+#include <SDL_mixer.h>
 #include <vector>
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -31,21 +32,26 @@ bool gameIsRunning = true;
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
+glm::vec3 lifeVec, gameOverVec;
 
 GLuint fontTextureID;
 
+int nextLevelLife;
+Mix_Music *bgm; 
+
 void SwitchToScene(Scene *scene) {
- currentScene = scene;
- currentScene->Initialize();
+	currentScene = scene;
+	currentScene->Initialize();
 }
 
 
 void Initialize() {
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	displayWindow = SDL_CreateWindow("Platformer!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
-
+	bgm = Mix_LoadMUS("bgm.mp3");
+	Mix_PlayMusic(bgm, -1);
 
 #ifdef _WINDOWS
 	glewInit();
@@ -83,9 +89,12 @@ void Initialize() {
 	sceneList[2] = new Level2();
 	sceneList[3] = new Level3();
 	SwitchToScene(sceneList[0]);
+	nextLevelLife = 3;
+
+	int total_life = currentScene->state.player.life;
 
 	effects = new Effects(projectionMatrix, viewMatrix);
-	//effects->Start(SHRINK, 5.0f);
+	effects->Start(FADEIN, 0.5f);
 }
 
 void ProcessInput() {
@@ -158,14 +167,30 @@ void Update() {
 	//state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT, state.map);
 
 	viewMatrix = glm::mat4(1.0f);
+	lifeVec = glm::vec3(1, -0.5, 0);
+	gameOverVec = glm::vec3(3, -2, 0);
+	
 	if (currentScene->state.player.position.x > 5) {
 		viewMatrix = glm::translate(viewMatrix, glm::vec3(-currentScene->state.player.position.x, 3.75, 0));
+		lifeVec = glm::vec3(currentScene->state.player.position.x - 4, -0.5, 0);
+		gameOverVec = glm::vec3(currentScene->state.player.position.x - 1.5, -2, 0);
 	}
 	else {
 		viewMatrix = glm::translate(viewMatrix, glm::vec3(-5, 3.75, 0));
 	}
 
 	viewMatrix = glm::translate(viewMatrix, effects->viewTranslate);
+
+	nextLevelLife = currentScene->state.player.life;
+
+	if (currentScene->state.player.shakeEffect) {
+		effects->Start(SHAKE, 2.0f);
+		currentScene->state.player.shakeEffect = false;
+	}
+
+	if (currentScene->state.player.restart && !currentScene->state.player.dead) {
+		effects->Start(FADEIN, 0.5f);
+	}
 
 }
 
@@ -177,29 +202,57 @@ void Render() {
 	//program.SetLightPosition2(glm::vec3(15, -5, 0));
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	currentScene->Render(&program);
+
+	if (currentScene->state.player.life == 3 && currentScene->state.nextLevel != -4) {
+		Util::DrawText(&program, fontTextureID, "Lives: 3", 0.8f, -0.5f, lifeVec);
+	}
+
+	if (currentScene->state.player.life == 2) {
+		Util::DrawText(&program, fontTextureID, "Lives: 2", 0.8f, -0.5f, lifeVec);
+	}
+
+	if (currentScene->state.player.life == 1) {
+		Util::DrawText(&program, fontTextureID, "Lives: 1", 0.8f, -0.5f, lifeVec);
+	}
+
+	if (currentScene->state.player.life <= 0 ) {
+		Util::DrawText(&program, fontTextureID, "You Lose", 1.0f, -0.5f, gameOverVec);
+	}
+
+	if (currentScene->state.player.win) {
+		Util::DrawText(&program, fontTextureID, "You Win!", 1.0f, -0.5f, gameOverVec);
+	}
 
 	if (currentScene->state.nextLevel == -4) {
-		Util::DrawText(&program, fontTextureID, "PLATFORMER", 1.0f, -0.5f, glm::vec3(3, -2, 0));
+		Util::DrawText(&program, fontTextureID, "PLATFORMER", 1.0f, -0.5f, glm::vec3(2.5, -2, 0));
 		Util::DrawText(&program, fontTextureID, "Press Enter to Play", 1.0f, -0.5f, glm::vec3(0.5, -4, 0));
 	}
 
-	if (currentScene->state.nextLevel == -1) {
-		Util::DrawText(&program, fontTextureID, "LEVEL1", 1.0f, -0.5f, glm::vec3(4, -1, 0));
+	if (currentScene->state.nextLevel == -1 && currentScene->state.player.life > 0) {
+		Util::DrawText(&program, fontTextureID, "LEVEL1", 1.0f, -0.5f, glm::vec3(1, -2, 0));
+		Util::DrawText(&program, fontTextureID, "Press 'A' and 'D' to move", 0.8f, -0.5f, glm::vec3(1, -3, 0));
+		Util::DrawText(&program, fontTextureID, "Press 'Space' to jump", 0.8f, -0.5f, glm::vec3(1, -4, 0));
+		Util::DrawText(&program, fontTextureID, "Try to step on the enemy's head", 0.8f, -0.5f, glm::vec3(10, -3, 0));
+		Util::DrawText(&program, fontTextureID, "Next Level ->", 0.8f, -0.5f, glm::vec3(22, -3, 0));
 	}
-	if (currentScene->state.nextLevel == -2) {
-		Util::DrawText(&program, fontTextureID, "LEVEL2", 1.0f, -0.5f, glm::vec3(4, -1, 0));
+	if (currentScene->state.nextLevel == -2 && currentScene->state.player.life > 0) {
+		Util::DrawText(&program, fontTextureID, "LEVEL2", 1.0f, -0.5f, glm::vec3(1, -2, 0));
+		Util::DrawText(&program, fontTextureID, "Next Level ->", 0.8f, -0.5f, glm::vec3(22, -3, 0));
 	}
-	if (currentScene->state.nextLevel == -3) {
-		Util::DrawText(&program, fontTextureID, "LEVEL3", 1.0f, -0.5f, glm::vec3(4, -1, 0));
+	if (currentScene->state.nextLevel == -3 && currentScene->state.player.life > 0) {
+		Util::DrawText(&program, fontTextureID, "LEVEL3", 1.0f, -0.5f, glm::vec3(1, -2, 0));
+		Util::DrawText(&program, fontTextureID, "GOAL ->", 0.8f, -0.4f, glm::vec3(22, -3, 0));
 	}
-	
+
+	currentScene->Render(&program);
+
 
 	effects->Render();
 	SDL_GL_SwapWindow(displayWindow);
 }
 
 void Shutdown() {
+	Mix_FreeMusic(bgm);
 	SDL_Quit();
 }
 
@@ -207,8 +260,17 @@ int main(int argc, char* argv[]) {
 	Initialize();
 
 	while (gameIsRunning) {
-		if (currentScene->state.nextLevel >= 0) SwitchToScene(sceneList[currentScene->state.nextLevel]);
-		ProcessInput();
+		if (currentScene->state.nextLevel >= 0) {
+			SwitchToScene(sceneList[currentScene->state.nextLevel]);
+			effects->Start(FADEIN, 0.5f);
+			currentScene->state.player.life = nextLevelLife;
+		}
+		if ((!currentScene->state.player.dead) && (!currentScene->state.player.win)) {
+			ProcessInput();
+		}
+		else{
+			currentScene->state.player.velocity.x = 0;
+		}
 		Update();
 		Render();
 	}
