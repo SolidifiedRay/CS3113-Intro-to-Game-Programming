@@ -51,18 +51,25 @@ void Level3::Initialize() {
 	state.enemies[3].position = glm::vec3(15.5, -5, 0);
 	state.enemies[3].aiState = Flying;
 
+	state.bullet.position = state.player.position;
+	state.bullet.isStatic = false;
+	state.bullet.isActive = false;
+	state.bullet.textureID = Util::LoadTexture("bullet.png");
 }
 void Level3::Update(float deltaTime) {
 	if (state.player.dead == false and state.player.restart == true) {
 		state.player.position = glm::vec3(4, 0, 0);
 		state.player.restart = false;
 	}
-	state.player.Update(deltaTime, state.player, NULL, 0, state.enemies, ENEMY_COUNT, state.map);
+	state.player.Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
 	if (state.player.position.x > 23) {
 		state.player.win = true;
 	}
+
+	state.bullet.Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
+
 	for (int i = 0; i < ENEMY_COUNT; i++) {
-		state.enemies[i].Update(deltaTime, state.player, NULL, 0, state.enemies, ENEMY_COUNT, state.map);
+		state.enemies[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
 	}
 }
 void Level3::Render(ShaderProgram* program) {
@@ -70,6 +77,10 @@ void Level3::Render(ShaderProgram* program) {
 
 	if (state.player.isActive == true) {
 		state.player.Render(program);
+	}
+
+	if (state.bullet.isActive == true) {
+		state.bullet.Render(program);
 	}
 
 	for (int i = 0; i < ENEMY_COUNT; i++) {

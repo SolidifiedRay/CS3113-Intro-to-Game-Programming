@@ -14,7 +14,7 @@
 
 #include "Map.h"
 
-enum  EntityType { PLAYER, PLATFORM, LIFE, ENEMY };
+enum  EntityType { PLAYER, PLATFORM, LIFE, ENEMY, BULLET };
 enum AIType { WALKER };
 enum AIState { IDLE, WALKING, Flying, PATROLLING };
 
@@ -58,7 +58,7 @@ public:
 
 	void AI(Entity player);
 
-	void Update(float deltaTime, Entity player, Entity *objects, int objectCount, Entity *enemies, int enemyCount, Map *map);
+	void Update(float deltaTime, Entity player, Entity *enemies, int enemyCount, Map *map);
 	void Render(ShaderProgram *program);
 
 	void Jump();
@@ -68,6 +68,8 @@ public:
 	bool collidedLeft;
 	bool collidedRight;
 
+
+	void ShootBullet(Entity player);
 };
 
 

@@ -116,6 +116,10 @@ void ProcessInput() {
 				}
 				currentScene->state.player.Jump();
 				break;
+			case SDLK_RETURN:
+				if (currentScene->state.bullet.isActive == false) {
+					currentScene->state.bullet.ShootBullet(currentScene->state.player);
+				}
 			case SDLK_k:
 				effects->Start(SHAKE, 2.0f);
 				break;

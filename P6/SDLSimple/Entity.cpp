@@ -18,6 +18,13 @@ Entity::Entity()
 	hit = Mix_LoadWAV("hit.wav");
 }
 
+void Entity::ShootBullet(Entity player) {
+	isActive = true;
+	position = player.position;
+	velocity.x = 20.0f;
+	acceleration.x = 10.0f;
+}
+
 bool Entity::CheckCollision(Entity other)
 {
 	if (isStatic == true) return false;
@@ -111,6 +118,14 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 						dead = true;
 					}
 				}
+				if (entityType == BULLET && object.entityType == ENEMY) {
+					objects[i].isActive = false;
+					isActive = false;
+				}
+				if (entityType == BULLET && object.entityType == ENEMY) {
+					objects[i].isActive = false;
+					isActive = false;
+				}
 			}
 			else if (velocity.x < 0) {
 				position.x += penetrationX;
@@ -130,6 +145,10 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 					else if (life == 0) {
 						isActive = false;
 					}
+				}
+				if (entityType == BULLET && object.entityType == ENEMY) {
+					objects[i].isActive = false;
+					isActive = false;
 				}
 			}
 		}
@@ -199,6 +218,9 @@ void Entity::CheckCollisionsY(Map *map)
 		else if (life == 0) {
 			isActive = false;
 		}
+		if (entityType == BULLET) {
+			isActive = false;
+		}
 	}
 }
 
@@ -222,6 +244,7 @@ void Entity::CheckCollisionsX(Map *map)
 		collidedRight = true;
 	}
 
+	
 
 	if (collidedLeft || collidedRight) {
 		if (life > 0) {
@@ -233,6 +256,9 @@ void Entity::CheckCollisionsX(Map *map)
 			}
 		}
 		else if (life == 0) {
+			isActive = false;
+		}
+		if (entityType == BULLET) {
 			isActive = false;
 		}
 	}
@@ -273,7 +299,7 @@ void Entity::AI(Entity player) {
 
 }
 
-void Entity::Update(float deltaTime, Entity player, Entity *objects, int objectCount, Entity* enemies, int enemyCount, Map *map)
+void Entity::Update(float deltaTime, Entity player, Entity* enemies, int enemyCount, Map *map)
 {
 	collidedTop = false;
 	collidedBottom = false;
@@ -288,20 +314,22 @@ void Entity::Update(float deltaTime, Entity player, Entity *objects, int objectC
 
 	position.y += velocity.y * deltaTime; // Move on Y
 	CheckCollisionsY(map);
-	CheckCollisionsY(objects, objectCount); // Fix if needed
 
 	if (entityType == PLAYER) {
 		CheckCollisionsY(enemies, enemyCount);
 	}
 
-
 	position.x += velocity.x * deltaTime; // Move on X
 	CheckCollisionsX(map);
-	CheckCollisionsX(objects, objectCount); // Fix if needed
 
 	if (entityType == PLAYER) {
 		CheckCollisionsX(enemies, enemyCount);
 	}
+
+	if (entityType == BULLET) {
+		CheckCollisionsX(enemies, enemyCount);
+	}
+
 
 }
 

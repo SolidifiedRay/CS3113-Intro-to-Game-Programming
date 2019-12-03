@@ -22,6 +22,12 @@ void Level1::Initialize() {
 	state.player.position = glm::vec3(3, -3.2, 0);
 	state.player.acceleration = glm::vec3(0, -9.8f, 0);
 	state.player.textureID = Util::LoadTexture("player.png");
+
+	state.bullet.position = state.player.position;
+	state.bullet.isStatic = false;
+	state.bullet.isActive = false;
+	state.bullet.textureID = Util::LoadTexture("bullet.png");
+
 	state.nextLevel = -1;
 
 }
@@ -31,12 +37,15 @@ void Level1::Update(float deltaTime) {
 		state.player.position = glm::vec3(4, -3.5, 0);
 		state.player.restart = false;
 	}
-	state.player.Update(deltaTime, state.player, NULL, 0, state.enemies, ENEMY_COUNT, state.map);
+	state.player.Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
 	if (state.player.position.x > 22) {
 		//state.nextLevel = 2;
 	}
+
+	state.bullet.Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
+
 	for (int i = 0; i < ENEMY_COUNT; i++) {
-		state.enemies[i].Update(deltaTime, state.player, NULL, 0, state.enemies, ENEMY_COUNT, state.map);
+		state.enemies[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
 	}
 
 }
@@ -46,6 +55,10 @@ void Level1::Render(ShaderProgram *program) {
 
 	if (state.player.isActive == true) {
 		state.player.Render(program);
+	}
+
+	if (state.bullet.isActive == true) {
+		state.bullet.Render(program);
 	}
 
 	for (int i = 0; i < ENEMY_COUNT; i++) {
