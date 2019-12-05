@@ -90,7 +90,7 @@ void Initialize() {
 	sceneList[1] = new Level1();
 	sceneList[2] = new Level2();
 	sceneList[3] = new Level3();
-	SwitchToScene(sceneList[0]);
+	SwitchToScene(sceneList[3]);
 	nextLevelLife = 3;
 
 	int total_life = currentScene->state.player.life;

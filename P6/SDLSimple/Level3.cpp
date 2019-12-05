@@ -7,8 +7,8 @@ unsigned int level3_data[] =
  2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
  2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
  2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 2, 1, 1, 1, 1, 1, 0, 0, 2, 2, 2, 2, 0, 0, 1, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
  2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 1, 1, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
 };
@@ -29,28 +29,28 @@ void Level3::Initialize() {
 	state.enemies[0].entityType = ENEMY;
 	state.enemies[0].textureID = flyingDevilTextureID;
 	state.enemies[0].isStatic = false;
-	state.enemies[0].position = glm::vec3(6.5, -5, 0);
-	state.enemies[0].aiState = Flying;
+	state.enemies[0].position = glm::vec3(6.5, -2, 0);
+	state.enemies[0].aiState = UPDOWN;
 
 	state.enemies[1].entityType = ENEMY;
 	state.enemies[1].textureID = devilTextureID;
 	state.enemies[1].isStatic = false;
-	state.enemies[1].position = glm::vec3(10, 0, 0);
-	state.enemies[1].acceleration = glm::vec3(0, -9.81f, 0);
-	state.enemies[1].aiState = IDLE;
+	state.enemies[1].position = glm::vec3(10, -2, 0);
+	state.enemies[1].aiState = UPDOWN;
 
 	state.enemies[2].entityType = ENEMY;
 	state.enemies[2].textureID = flyingDevilTextureID;
 	state.enemies[2].isStatic = false;
-	state.enemies[2].position = glm::vec3(12.5, -5, 0);
-	state.enemies[2].aiState = Flying;
+	state.enemies[2].position = glm::vec3(12.5, -2, 0);
+	state.enemies[2].aiState = UPDOWN;
 
 	state.enemies[3].entityType = ENEMY;
 	state.enemies[3].textureID = flyingDevilTextureID;
 	state.enemies[3].isStatic = false;
-	state.enemies[3].position = glm::vec3(15.5, -5, 0);
-	state.enemies[3].aiState = Flying;
+	state.enemies[3].position = glm::vec3(15.5, -2, 0);
+	state.enemies[3].aiState = UPDOWN;
 
+	state.bullet.entityType = BULLET;
 	state.bullet.position = state.player.position;
 	state.bullet.isStatic = false;
 	state.bullet.isActive = false;

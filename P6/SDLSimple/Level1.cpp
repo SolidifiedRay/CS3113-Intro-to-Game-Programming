@@ -23,6 +23,7 @@ void Level1::Initialize() {
 	state.player.acceleration = glm::vec3(0, -9.8f, 0);
 	state.player.textureID = Util::LoadTexture("player.png");
 
+	state.bullet.entityType = BULLET;
 	state.bullet.position = state.player.position;
 	state.bullet.isStatic = false;
 	state.bullet.isActive = false;

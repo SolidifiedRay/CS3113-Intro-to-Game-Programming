@@ -267,7 +267,7 @@ void Entity::CheckCollisionsX(Map *map)
 void Entity::AI(Entity player) {
 	switch (aiState) {
 	case IDLE:
-		if (glm::distance(position, player.position) < 3.0f) {
+		if (glm::distance(position, player.position) < 4.0f) {
 			aiState = WALKING;
 		}
 		break;
@@ -279,20 +279,24 @@ void Entity::AI(Entity player) {
 			velocity.x = -1.0f;
 		}
 		break;
-	case Flying:
-		if (position.y < -4.5) {
-			velocity.y = 3.0f;
+	case UPDOWN:
+		if (position.y > -1) {
+			velocity.y = -1.0f;
 		}
-		else if (position.y > -1) {
-			velocity.y = -3.0f;
+		else if (position.y < -3) {
+			velocity.y = 1.0f;
+		}
+		else if (position.y == -2) {
+			velocity.y = 1.0f;
 		}
 		break;
-	case PATROLLING:
-		if (position.x < -1.4) {
-			velocity.x = 1.0f;
+	case LEFTRIGHT:
+		int num = rand() % 100;
+		if (num < 50) {
+			velocity.x = 7.0f;
 		}
-		else if (position.x > 0.3) {
-			velocity.x = -1.0f;
+		else {
+			velocity.x = -7.0f;
 		}
 		break;
 	}
