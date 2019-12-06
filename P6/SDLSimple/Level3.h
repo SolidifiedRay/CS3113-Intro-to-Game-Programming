@@ -5,5 +5,6 @@ public:
 	void Initialize() override;
 	void Update(float deltaTime) override;
 	void Render(ShaderProgram* program) override;
+	double bossAttackInterval;
 };
 #pragma once

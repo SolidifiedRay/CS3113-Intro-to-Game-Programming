@@ -51,7 +51,7 @@ void Initialize() {
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
-	bgm = Mix_LoadMUS("bgm.wav");
+	bgm = Mix_LoadMUS("bgm1.wav");
 
 	Mix_PlayMusic(bgm, -1);
 
@@ -65,8 +65,6 @@ void Initialize() {
 	program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
 	//program.Load("shaders/vertex_textured.glsl","shaders/effects_textured.glsl");
 	//program.Load("shaders/vertex_lit.glsl","shaders/fragment_lit.glsl");
-
-
 
 	fontTextureID = Util::LoadTexture("font1.png");
 
@@ -121,6 +119,11 @@ void ProcessInput() {
 					currentScene->state.bullet.ShootBullet(currentScene->state.player);
 				}
 				break;
+			case SDLK_j:
+				if (currentScene->state.bullet.isActive == false) {
+					currentScene->state.bullet.BossShootBullet(currentScene->state.enemies[0]);
+				}
+				break;
 			case SDLK_k:
 				effects->Start(SHAKE, 2.0f);
 				break;
@@ -128,7 +131,7 @@ void ProcessInput() {
 		}
 	}
 
-	currentScene->state.player.velocity.x = 2.5;
+	currentScene->state.player.velocity.x = 2;
 
 	// Check for pressed/held keys below
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
@@ -186,6 +189,12 @@ void Update() {
 
 	if (currentScene->state.player.restart && !currentScene->state.player.dead) {
 		effects->Start(FADEIN, 0.5f);
+	}
+
+	if (currentScene->state.player.life <= 0) {
+		currentScene->state.player.isActive = false;
+		currentScene->state.player.velocity.y = 0;
+		currentScene->state.player.acceleration = glm::vec3(0, 0, 0);
 	}
 }
 

@@ -30,14 +30,14 @@ void Level2::Initialize() {
 	state.enemies[0].isStatic = false;
 	state.enemies[0].position = glm::vec3(9, 0, 0);
 	state.enemies[0].acceleration = glm::vec3(0, -9.81f, 0);
-	state.enemies[0].aiState = PATROLLING;
+	state.enemies[0].aiState = UPDOWN;
 
 	state.enemies[1].entityType = ENEMY;
 	state.enemies[1].textureID = devilTextureID;
 	state.enemies[1].isStatic = false;
 	state.enemies[1].position = glm::vec3(12, 2, 0);
 	state.enemies[1].acceleration = glm::vec3(0, -9.81f, 0);
-	state.enemies[1].aiState = IDLE;
+	state.enemies[1].aiState = LEFTRIGHT;
 
 	state.enemies[2].entityType = ENEMY;
 	state.enemies[2].textureID = devilTextureID;
@@ -53,6 +53,7 @@ void Level2::Initialize() {
 	state.enemies[3].acceleration = glm::vec3(0, -9.81f, 0);
 	state.enemies[3].aiState = IDLE;
 
+	state.bullet.entityType = BULLET;
 	state.bullet.position = state.player.position;
 	state.bullet.isStatic = false;
 	state.bullet.isActive = false;
@@ -64,15 +65,15 @@ void Level2::Update(float deltaTime) {
 		state.player.position = glm::vec3(4, 0, 0);
 		state.player.restart = false;
 	}
-	state.player.Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
+	state.player.Update(deltaTime, &(state.player), state.enemies, ENEMY_COUNT, state.map);
 	if (state.player.position.x > 22) {
 		state.nextLevel = 3;
 	}
 
-	state.bullet.Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
+	state.bullet.Update(deltaTime, &(state.player), state.enemies, ENEMY_COUNT, state.map);
 
 	for (int i = 0; i < ENEMY_COUNT; i++) {
-		state.enemies[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
+		state.enemies[i].Update(deltaTime, &(state.player), state.enemies, ENEMY_COUNT, state.map);
 	}
 }
 void Level2::Render(ShaderProgram *program) {

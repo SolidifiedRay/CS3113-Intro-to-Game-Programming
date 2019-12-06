@@ -18,6 +18,7 @@ struct GameState {
 	Entity player;
 	Entity bullet;
 	Entity enemies[ENEMY_COUNT];
+	Entity boss;
 	Map *map;
 	int nextLevel;
 };

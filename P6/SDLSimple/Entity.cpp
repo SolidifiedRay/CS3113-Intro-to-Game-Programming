@@ -8,21 +8,33 @@ Entity::Entity()
 	restart = false;
 	position = glm::vec3(0);
 	speed = 0;
-	width = 1;
+	width = 2;
 	height = 1;
 	life = 3;
 	dead = false;
 	shakeEffect = false;
 	win = false;
-	jump = Mix_LoadWAV("jump.wav");
+	jump = Mix_LoadWAV("shoot.wav");
 	hit = Mix_LoadWAV("hit.wav");
+	origin_y = 0;
+	origin_x = 0;
+	boss_life = 10;
 }
 
 void Entity::ShootBullet(Entity player) {
 	isActive = true;
-	position = player.position;
+	position = glm::vec3(player.position.x + 1.5, player.position.y, player.position.z); ;
 	velocity.x = 20.0f;
 	acceleration.x = 10.0f;
+	Mix_PlayChannel(-1, jump, 0);
+}
+
+void Entity::BossShootBullet(Entity boss) {
+	isActive = true;
+	position = glm::vec3(boss.position.x - 2, boss.position.y, boss.position.z); ;
+	velocity.x = -10.0f;
+	acceleration.x = -10.0f;
+	Mix_PlayChannel(-1, jump, 0);
 }
 
 bool Entity::CheckCollision(Entity other)
@@ -41,8 +53,6 @@ bool Entity::CheckCollision(Entity other)
 	return false;
 }
 
-
-
 void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 {
 	for (int i = 0; i < objectCount; i++)
@@ -58,7 +68,6 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 				velocity.y = 0;
 				collidedTop = true;
 				if (entityType == PLAYER && object.entityType == ENEMY) {
-					Mix_PlayChannel(-1, hit, 0);
 					shakeEffect = true;
 					if (life > 0) {
 						life -= 1;
@@ -73,10 +82,6 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 						dead = true;
 					}
 				}
-				if (entityType == BULLET && object.entityType == ENEMY) {
-					objects[i].isActive = false;
-					isActive = false;
-				}
 			}
 			else if (velocity.y < 0) {
 				position.y += penetrationY;
@@ -84,12 +89,7 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 				collidedBottom = true;
 				if (entityType == PLAYER && object.entityType == ENEMY) {
 					shakeEffect = true;
-					Mix_PlayChannel(-1, hit, 0);
 					objects[i].isActive = false;
-				}
-				if (entityType == BULLET && object.entityType == ENEMY) {
-					objects[i].isActive = false;
-					isActive = false;
 				}
 			}
 		}
@@ -110,12 +110,7 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 				position.x -= penetrationX;
 				velocity.x = 0;
 				collidedRight = true;
-				if (entityType == BULLET && object.entityType == ENEMY) {
-					objects[i].isActive = false;
-					isActive = false;
-				}
 				if (entityType == PLAYER && object.entityType == ENEMY) {
-					Mix_PlayChannel(-1, hit, 0);
 					shakeEffect = true;
 					if (life > 0) {
 						life -= 1;
@@ -130,8 +125,20 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 						dead = true;
 					}
 				}
-				if (entityType == BULLET && object.entityType == ENEMY) {
+				if (entityType == BULLET && object.entityType == ENEMY && (object.aiState != BOSSAI)) {
 					objects[i].isActive = false;
+					isActive = false;
+				}
+				else if (entityType == BULLET && object.entityType == ENEMY && (object.aiState == BOSSAI)) {
+					if (boss_life > 0) {
+						boss_life -= 1;
+						if (boss_life == 0) {
+							objects[i].isActive = false;
+						}
+					}
+					else if (boss_life == 0) {
+						objects[i].isActive = false;
+					}
 					isActive = false;
 				}
 			}
@@ -139,12 +146,7 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 				position.x += penetrationX;
 				velocity.x = 0;
 				collidedLeft = true;
-				if (entityType == BULLET && object.entityType == ENEMY) {
-					objects[i].isActive = false;
-					isActive = false;
-				}
 				if (entityType == PLAYER && object.entityType == ENEMY) {
-					Mix_PlayChannel(-1, hit, 0);
 					shakeEffect = true;
 					if (life > 0) {
 						life -= 1;
@@ -158,16 +160,76 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 						isActive = false;
 					}
 				}
+				if (entityType == BULLET && object.entityType == ENEMY && (object.aiState != BOSSAI) ) {
+					objects[i].isActive = false;
+					isActive = false;
+				}
+				else if (entityType == BULLET && object.entityType == ENEMY && (object.aiState == BOSSAI)) {
+					if (boss_life > 0) {
+						boss_life -= 1;
+						if (boss_life == 0) {
+							objects[i].isActive = false;
+						}
+					}
+					else if (boss_life == 0) {
+						objects[i].isActive = false;
+					}
+					isActive = false;
+				}
 			}
 		}
 	}
 }
 
+void Entity::HitPlayer(Entity *player)
+{
+		Entity *object = player;
+
+		if (CheckCollision(*object))
+		{
+			float xdist = fabs(position.x - (*object).position.x);
+			float penetrationX = fabs(xdist - (width / 2) - ((*object).width / 2));
+			if (velocity.x > 0) {
+				position.x -= penetrationX;
+				velocity.x = 0;
+				collidedRight = true;
+				if (entityType == BULLET && (*object).entityType == PLAYER) {
+					shakeEffect = true; 
+					isActive = false;
+					if ((*object).life > 0) {
+						(*object).life -= 1;
+						restart = true;
+						if ((*object).life == 0) {
+							isActive = false;
+							dead = true;
+						}
+					}
+				}
+			}
+			else if (velocity.x < 0) {
+				position.x += penetrationX;
+				velocity.x = 0;
+				collidedLeft = true;
+				if (entityType == BULLET && (*object).entityType == PLAYER) {
+					shakeEffect = true;
+					isActive = false;
+					if ((*object).life > 0) {
+						(*object).life -= 1;
+						restart = true;
+						if ((*object).life == 0) {
+							isActive = false;
+							dead = true;
+						}
+					}
+				}
+			}
+		}
+
+}
 
 void Entity::Jump()
 {
 	velocity.y = 4.0f;
-	Mix_PlayChannel(-1, jump, 0);
 }
 
 
@@ -215,18 +277,16 @@ void Entity::CheckCollisionsY(Map *map)
 		collidedBottom = true;
 	}
 	if (collidedTop || collidedBottom) {
-		if (entityType == PLAYER) {
-			if (life > 0) {
-				life -= 1;
-				restart = true;
-				if (life == 0) {
-					isActive = false;
-					dead = true;
-				}
-			}
-			else if (life == 0) {
+		if (life > 0) {
+			life -= 1;
+			restart = true;
+			if (life == 0) {
 				isActive = false;
+				dead = true;
 			}
+		}
+		else if (life == 0) {
+			isActive = false;
 		}
 		if (entityType == BULLET) {
 			isActive = false;
@@ -254,19 +314,19 @@ void Entity::CheckCollisionsX(Map *map)
 		collidedRight = true;
 	}
 
+
+
 	if (collidedLeft || collidedRight) {
-		if (entityType == PLAYER) {
-			if (life > 0) {
-				life -= 1;
-				restart = true;
-				if (life == 0) {
-					isActive = false;
-					dead = true;
-				}
-			}
-			else if (life == 0) {
+		if (life > 0) {
+			life -= 1;
+			restart = true;
+			if (life == 0) {
 				isActive = false;
+				dead = true;
 			}
+		}
+		else if (life == 0) {
+			isActive = false;
 		}
 		if (entityType == BULLET) {
 			isActive = false;
@@ -274,10 +334,12 @@ void Entity::CheckCollisionsX(Map *map)
 	}
 }
 
-void Entity::AI(Entity player) {
+void Entity::AI(Entity player, double y, double x) {
+	double position_y = y;
+	double position_x = x;
 	switch (aiState) {
 	case IDLE:
-		if (glm::distance(position, player.position) < 3.0f) {
+		if (glm::distance(position, player.position) < 4.0f) {
 			aiState = WALKING;
 		}
 		break;
@@ -289,27 +351,34 @@ void Entity::AI(Entity player) {
 			velocity.x = -1.0f;
 		}
 		break;
-	case Flying:
-		if (position.y < -4.5) {
-			velocity.y = 3.0f;
+	case UPDOWN:
+		if (position.y - position_y == 0) {
+			velocity.y = 1.0f;
 		}
-		else if (position.y > -1) {
-			velocity.y = -3.0f;
+		if (position.y - position_y > 1) {
+			velocity.y = -1.0f;
+		}
+		else if (position.y - position_y < -1) {
+			velocity.y = 1.0f;
 		}
 		break;
-	case PATROLLING:
-		if (position.x < -1.4) {
-			velocity.x = 1.0f;
+	case BOSSAI:
+		if (position.y - position_y == 0) {
+			velocity.y = 2.0f;
+			velocity.x = 2;
 		}
-		else if (position.x > 0.3) {
-			velocity.x = -1.0f;
+		if (position.y - position_y > 3.5) {
+			velocity.y = -2.0f;
+		}
+		else if (position.y - position_y < -3.5) {
+			velocity.y = 2.0f;
 		}
 		break;
 	}
 
 }
 
-void Entity::Update(float deltaTime, Entity player, Entity* enemies, int enemyCount, Map *map)
+void Entity::Update(float deltaTime, Entity *player, Entity* enemies, int enemyCount, Map *map, double origin_y, double origin_x)
 {
 	collidedTop = false;
 	collidedBottom = false;
@@ -319,7 +388,7 @@ void Entity::Update(float deltaTime, Entity player, Entity* enemies, int enemyCo
 	velocity += acceleration * deltaTime;
 
 	if (entityType == ENEMY) {
-		AI(player);
+		AI(*player, origin_y, origin_x);
 	}
 
 	position.y += velocity.y * deltaTime; // Move on Y
@@ -337,7 +406,8 @@ void Entity::Update(float deltaTime, Entity player, Entity* enemies, int enemyCo
 	}
 
 	if (entityType == BULLET) {
-		CheckCollisionsX(enemies, enemyCount);
+		CheckCollisionsX(enemies, enemyCount); 
+		HitPlayer(player);
 	}
 
 

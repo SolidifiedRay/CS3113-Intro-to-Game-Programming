@@ -23,30 +23,33 @@ void Level1::Initialize() {
 	state.player.acceleration = glm::vec3(0, -9.8f, 0);
 	state.player.textureID = Util::LoadTexture("player.png");
 
-	state.bullet.position = state.player.position;
 	state.bullet.entityType = BULLET;
+	state.bullet.position = state.player.position;
 	state.bullet.isStatic = false;
 	state.bullet.isActive = false;
 	state.bullet.textureID = Util::LoadTexture("bullet.png");
 
-	state.nextLevel = -1;
 
 	GLuint devilTextureID = Util::LoadTexture("enemy.png");
-	/*
+	GLuint alienTextureID = Util::LoadTexture("alien.png");
 	state.enemies[0].entityType = ENEMY;
-	state.enemies[0].textureID = devilTextureID;
+	state.enemies[0].textureID = alienTextureID;
 	state.enemies[0].isStatic = false;
-	state.enemies[0].position = glm::vec3(10, 0, 0);
-	state.enemies[0].acceleration = glm::vec3(0, -9.81f, 0);
-	state.enemies[0].aiState = PATROLLING;
-	*/
+	state.enemies[0].position = glm::vec3(15, -4, 0);
+	state.enemies[0].origin_y = state.enemies[0].position.y;
+	state.enemies[0].origin_x = state.enemies[0].position.x;
+	state.enemies[0].aiState = UPDOWN;
 
-	state.enemies[0].entityType = ENEMY;
-	state.enemies[0].textureID = devilTextureID;
-	state.enemies[0].isStatic = false;
-	state.enemies[0].position = glm::vec3(15, -3.5, 0);
-	state.enemies[0].acceleration = glm::vec3(0, 0, 0);
-	state.enemies[0].aiState = IDLE;
+
+	state.enemies[1].entityType = ENEMY;
+	state.enemies[1].textureID = alienTextureID;
+	state.enemies[1].isStatic = false;
+	state.enemies[1].position = glm::vec3(22, -3.5, 0);
+	state.enemies[1].origin_y = state.enemies[1].position.y;
+	state.enemies[1].origin_x = state.enemies[1].position.x;
+	state.enemies[1].aiState = UPDOWN;
+
+	state.nextLevel = -1;
 
 }
 
@@ -55,17 +58,15 @@ void Level1::Update(float deltaTime) {
 		state.player.position = glm::vec3(4, -3.5, 0);
 		state.player.restart = false;
 	}
-	state.player.Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
-	if (state.player.position.x > 24) {
-		state.player.win = true;
-		state.player.acceleration = glm::vec3(0, 0, 0);
-		state.player.velocity.y = 0;
+	state.player.Update(deltaTime, &(state.player), state.enemies, ENEMY_COUNT, state.map);
+	if (state.player.position.x > 22) {
+		state.nextLevel = 2;
 	}
 
-	state.bullet.Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
+	state.bullet.Update(deltaTime, &(state.player), state.enemies, ENEMY_COUNT, state.map);
 
 	for (int i = 0; i < ENEMY_COUNT; i++) {
-		state.enemies[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map);
+		state.enemies[i].Update(deltaTime, &(state.player), state.enemies, ENEMY_COUNT, state.map, state.enemies[i].origin_y, state.enemies[i].origin_x);
 	}
 
 }

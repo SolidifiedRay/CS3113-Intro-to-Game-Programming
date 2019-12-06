@@ -14,9 +14,9 @@
 
 #include "Map.h"
 
-enum  EntityType { PLAYER, PLATFORM, LIFE, ENEMY, BULLET };
+enum  EntityType { PLAYER, PLATFORM, LIFE, ENEMY, BULLET, BOSS };
 enum AIType { WALKER };
-enum AIState { IDLE, WALKING, Flying, PATROLLING };
+enum AIState { IDLE, WALKING, UPDOWN, LEFTRIGHT, Flying, PATROLLING, BOSSAI };
 
 class Entity {
 public:
@@ -31,8 +31,11 @@ public:
 	glm::vec3 position;
 	glm::vec3 velocity;
 	glm::vec3 acceleration;
+	double origin_y;
+	double origin_x;
 
 	int life;
+	int boss_life;
 	bool dead;
 	bool shakeEffect;
 	bool win;
@@ -53,12 +56,14 @@ public:
 	void CheckCollisionsX(Entity *objects, int objectCount);
 	void CheckCollisionsY(Entity *objects, int objectCount);
 
+	void HitPlayer(Entity *player);
+
 	void CheckCollisionsX(Map *map);
 	void CheckCollisionsY(Map *map);
 
-	void AI(Entity player);
+	void AI(Entity player, double y, double x);
 
-	void Update(float deltaTime, Entity player, Entity *enemies, int enemyCount, Map *map);
+	void Update(float deltaTime, Entity *player, Entity *enemies, int enemyCount, Map *map, double origin_y=0, double origin_x=0);
 	void Render(ShaderProgram *program);
 
 	void Jump();
@@ -69,5 +74,7 @@ public:
 	bool collidedRight;
 
 
-	void ShootBullet(Entity player);
+	void ShootBullet(Entity player); 
+	void BossShootBullet(Entity boss);
 };
+
