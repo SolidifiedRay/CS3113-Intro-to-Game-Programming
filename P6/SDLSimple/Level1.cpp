@@ -1,16 +1,16 @@
 #include "Level1.h"
-#define LEVEL1_WIDTH 30
+#define LEVEL1_WIDTH 60
 #define LEVEL1_HEIGHT 8
 unsigned int level1_data[] =
 {
- 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
- 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 3, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0,
- 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0,
- 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0,
- 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
- 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0,
- 3, 0, 0, 0, 3, 3, 0, 0, 3, 3, 3, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0,
- 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+ 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 3, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+ 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+ 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+ 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0,
+ 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0,
+ 3, 0, 0, 0, 3, 3, 0, 0, 3, 3, 3, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0,
+ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 };
 
 void Level1::Initialize() {
@@ -20,7 +20,7 @@ void Level1::Initialize() {
 	state.player.isStatic = false;
 	state.player.width = 1.0f;
 	state.player.position = glm::vec3(3, -3.2, 0);
-	state.player.acceleration = glm::vec3(0, -9.8f, 0);
+	state.player.acceleration = glm::vec3(0, 0, 0);
 	state.player.textureID = Util::LoadTexture("player.png");
 
 	state.bullet.entityType = BULLET;
@@ -29,8 +29,6 @@ void Level1::Initialize() {
 	state.bullet.isActive = false;
 	state.bullet.textureID = Util::LoadTexture("bullet.png");
 
-
-	GLuint devilTextureID = Util::LoadTexture("enemy.png");
 	GLuint alienTextureID = Util::LoadTexture("alien.png");
 	state.enemies[0].entityType = ENEMY;
 	state.enemies[0].textureID = alienTextureID;
@@ -49,17 +47,30 @@ void Level1::Initialize() {
 	state.enemies[1].origin_x = state.enemies[1].position.x;
 	state.enemies[1].aiState = UPDOWN;
 
+	state.enemies[2].entityType = ENEMY;
+	state.enemies[2].textureID = alienTextureID;
+	state.enemies[2].isStatic = false;
+	state.enemies[2].position = glm::vec3(33, -2.5, 0);
+	state.enemies[2].origin_y = state.enemies[2].position.y;
+	state.enemies[2].origin_x = state.enemies[2].position.x;
+	state.enemies[2].aiState = UPDOWN;
+
 	state.nextLevel = -1;
+	
+	state.player.velocity.x = 2;
 
 }
 
 void Level1::Update(float deltaTime) {
+
+	state.player.velocity.x = 2;
+
 	if (state.player.dead == false and state.player.restart == true) {
 		state.player.position = glm::vec3(4, -3.5, 0);
 		state.player.restart = false;
 	}
 	state.player.Update(deltaTime, &(state.player), state.enemies, ENEMY_COUNT, state.map);
-	if (state.player.position.x > 22) {
+	if (state.player.position.x > 55) {
 		state.nextLevel = 2;
 	}
 

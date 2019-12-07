@@ -93,6 +93,7 @@ void Initialize() {
 
 	int total_life = currentScene->state.player.life;
 
+
 	effects = new Effects(projectionMatrix, viewMatrix);
 	effects->Start(FADEIN, 0.5f);
 }
@@ -109,19 +110,17 @@ void ProcessInput() {
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
 			case SDLK_SPACE:
+					if (currentScene->state.nextLevel == -1) {
+						currentScene->state.player.acceleration = glm::vec3(0, -9.8f, 0);
+					}
+					currentScene->state.player.Jump();
+				break;
+			case SDLK_RETURN:
 				if (currentScene->state.nextLevel == -4) {
 					SwitchToScene(sceneList[1]);
 				}
-				currentScene->state.player.Jump();
-				break;
-			case SDLK_RETURN:
 				if (currentScene->state.bullet.isActive == false) {
 					currentScene->state.bullet.ShootBullet(currentScene->state.player);
-				}
-				break;
-			case SDLK_j:
-				if (currentScene->state.bullet.isActive == false) {
-					currentScene->state.bullet.BossShootBullet(currentScene->state.enemies[0]);
 				}
 				break;
 			case SDLK_k:
@@ -130,8 +129,6 @@ void ProcessInput() {
 			}
 		}
 	}
-
-	currentScene->state.player.velocity.x = 2;
 
 	// Check for pressed/held keys below
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
@@ -208,7 +205,18 @@ void Render() {
 
 	currentScene->Render(&program);
 
-	if (currentScene->state.player.life == 3 && currentScene->state.nextLevel != -4) {
+
+
+	if (currentScene->state.player.life == 5 && currentScene->state.nextLevel != -4) {
+		Util::DrawText(&program, fontTextureID, "Lives: 5", 0.8f, -0.5f, lifeVec);
+	}
+
+
+	if (currentScene->state.player.life == 4) {
+		Util::DrawText(&program, fontTextureID, "Lives: 4", 0.8f, -0.5f, lifeVec);
+	}
+
+	if (currentScene->state.player.life == 3) {
 		Util::DrawText(&program, fontTextureID, "Lives: 3", 0.8f, -0.5f, lifeVec);
 	}
 
@@ -229,19 +237,21 @@ void Render() {
 	}
 
 	if (currentScene->state.nextLevel == -4) {
-		Util::DrawText(&program, fontTextureID, "Press Space to fly!", 1.0f, -0.5f, glm::vec3(0.5, -2, 0));
+		Util::DrawText(&program, fontTextureID, "Press enter", 1.0f, -0.5f, glm::vec3(3, -5, 0));
+		Util::DrawText(&program, fontTextureID, "to start", 1.0f, -0.5f, glm::vec3(3, -6, 0));
 	}
 
 	if (currentScene->state.nextLevel == -1 && currentScene->state.player.life > 0) {
 		Util::DrawText(&program, fontTextureID, "LEVEL1", 1.0f, -0.5f, glm::vec3(1, -2, 0));
+		Util::DrawText(&program, fontTextureID, "Press Space to fly!", 1.0f, -0.5f, glm::vec3(1, -3, 0));
+		Util::DrawText(&program, fontTextureID, "Next Level ->", 0.8f, -0.5f, glm::vec3(55, -3, 0));
 	}
 	if (currentScene->state.nextLevel == -2 && currentScene->state.player.life > 0) {
 		Util::DrawText(&program, fontTextureID, "LEVEL2", 1.0f, -0.5f, glm::vec3(1, -2, 0));
-		Util::DrawText(&program, fontTextureID, "Next Level ->", 0.8f, -0.5f, glm::vec3(22, -3, 0));
+		Util::DrawText(&program, fontTextureID, "Next Level ->", 0.8f, -0.5f, glm::vec3(85, -3, 0));
 	}
 	if (currentScene->state.nextLevel == -3 && currentScene->state.player.life > 0) {
-		Util::DrawText(&program, fontTextureID, "LEVEL3", 1.0f, -0.5f, glm::vec3(1, -2, 0));
-		Util::DrawText(&program, fontTextureID, "GOAL ->", 0.8f, -0.4f, glm::vec3(22, -3, 0));
+		Util::DrawText(&program, fontTextureID, "BOSS Fight!", 1.0f, -0.5f, glm::vec3(1, -2, 0));
 	}
 
 

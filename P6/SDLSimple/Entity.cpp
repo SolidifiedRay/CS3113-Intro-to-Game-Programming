@@ -10,7 +10,7 @@ Entity::Entity()
 	speed = 0;
 	width = 2;
 	height = 1;
-	life = 3;
+	life = 5;
 	dead = false;
 	shakeEffect = false;
 	win = false;
@@ -18,7 +18,7 @@ Entity::Entity()
 	hit = Mix_LoadWAV("hit.wav");
 	origin_y = 0;
 	origin_x = 0;
-	boss_life = 10;
+	boss_life = 15;
 }
 
 void Entity::ShootBullet(Entity player) {
