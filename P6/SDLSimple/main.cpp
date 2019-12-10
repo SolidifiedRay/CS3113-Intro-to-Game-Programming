@@ -51,7 +51,7 @@ void Initialize() {
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
-	bgm = Mix_LoadMUS("bgm1.wav");
+	bgm = Mix_LoadMUS("space.wav");
 
 	Mix_PlayMusic(bgm, -1);
 
@@ -237,6 +237,7 @@ void Render() {
 	}
 
 	if (currentScene->state.nextLevel == -4) {
+		Util::DrawText(&program, fontTextureID, "Space Marshal", 1.6f, -0.9f, glm::vec3(1, -3, 0));
 		Util::DrawText(&program, fontTextureID, "Press enter", 1.0f, -0.5f, glm::vec3(3, -5, 0));
 		Util::DrawText(&program, fontTextureID, "to start", 1.0f, -0.5f, glm::vec3(3, -6, 0));
 	}
