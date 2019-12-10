@@ -1,6 +1,5 @@
-# CS3113 - Project5: Plaformer
-Press "A" and "D" to move
+# CS3113 - Project6: Space Marshal
 
 Press "Space" to jump
 
-Kill enmeies by jumping on their heads
+Press "Enter" to shoot 
